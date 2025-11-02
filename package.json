@@ -1,0 +1,20 @@
+{
+  "name": "@keerthi_10/wealthWise",
+  "version": "1.0.1",
+  "description": "A full-stack personal finance management application with expense tracking, budgeting, income tracking, and bank integration.",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/Keerthid-10/wealthWise.git"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/Keerthid-10/wealthWise/issues"
+  },
+  "homepage": "https://github.com/Keerthid-10/wealthWise#readme"
+}
