@@ -7,8 +7,12 @@ require('dotenv').config();
 const app = express();
 const PORT = process.env.PORT || 3002;
 
-// Middleware
-app.use(cors());
+// Middleware - Allow all CORS requests
+app.use(cors({
+  origin: '*',
+  methods: ['GET', 'POST', 'PUT', 'DELETE', 'OPTIONS'],
+  allowedHeaders: ['Content-Type', 'Authorization']
+}));
 app.use(express.json());
 
 // Load bank statement data
@@ -154,6 +158,116 @@ function getPaymentMethod(referenceNumber) {
   if (referenceNumber.startsWith('BILL')) return 'Net Banking';
   return 'Others';
 }
+
+// Root route - Landing page
+app.get('/', (req, res) => {
+  res.send(`
+    <!DOCTYPE html>
+    <html lang="en">
+    <head>
+      <meta charset="UTF-8">
+      <meta name="viewport" content="width=device-width, initial-scale=1.0">
+      <title>Bank Statement Server</title>
+      <style>
+        body {
+          font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+          background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+          color: white;
+          display: flex;
+          justify-content: center;
+          align-items: center;
+          height: 100vh;
+          margin: 0;
+        }
+        .container {
+          background: rgba(255, 255, 255, 0.1);
+          backdrop-filter: blur(10px);
+          border-radius: 20px;
+          padding: 40px;
+          box-shadow: 0 8px 32px 0 rgba(31, 38, 135, 0.37);
+          max-width: 600px;
+          text-align: center;
+        }
+        h1 {
+          font-size: 2.5em;
+          margin-bottom: 10px;
+        }
+        .status {
+          font-size: 1.2em;
+          color: #4ade80;
+          margin: 20px 0;
+        }
+        .info {
+          background: rgba(255, 255, 255, 0.1);
+          border-radius: 10px;
+          padding: 20px;
+          margin: 20px 0;
+          text-align: left;
+        }
+        .info h3 {
+          margin-top: 0;
+          color: #fbbf24;
+        }
+        .endpoint {
+          background: rgba(0, 0, 0, 0.2);
+          padding: 10px;
+          margin: 10px 0;
+          border-radius: 5px;
+          font-family: 'Courier New', monospace;
+        }
+        a {
+          color: #60a5fa;
+          text-decoration: none;
+        }
+        a:hover {
+          text-decoration: underline;
+        }
+        .account-info {
+          margin-top: 20px;
+          font-size: 0.9em;
+          opacity: 0.8;
+        }
+      </style>
+    </head>
+    <body>
+      <div class="container">
+        <h1>🏦 Bank Statement Server</h1>
+        <div class="status">✅ Server is Running</div>
+
+        <div class="info">
+          <h3>Account Information</h3>
+          <div class="account-info">
+            <p><strong>Account Holder:</strong> ${bankData.accountHolder.name}</p>
+            <p><strong>Account Number:</strong> ${bankData.accountHolder.accountNumber}</p>
+            <p><strong>Statement Period:</strong> ${bankData.statementPeriod.from} to ${bankData.statementPeriod.to}</p>
+            <p><strong>Closing Balance:</strong> ₹${bankData.balance.closingBalance.toFixed(2)}</p>
+          </div>
+        </div>
+
+        <div class="info">
+          <h3>Available API Endpoints</h3>
+          <div class="endpoint">
+            <strong>GET</strong> <a href="/api/bank/transactions" target="_blank">/api/bank/transactions</a>
+            <br><small>View all transactions</small>
+          </div>
+          <div class="endpoint">
+            <strong>GET</strong> <a href="/api/bank/transactions/export" target="_blank">/api/bank/transactions/export</a>
+            <br><small>Export debit transactions for import</small>
+          </div>
+          <div class="endpoint">
+            <strong>GET</strong> <a href="/health" target="_blank">/health</a>
+            <br><small>Health check endpoint</small>
+          </div>
+        </div>
+
+        <p style="margin-top: 30px; font-size: 0.9em; opacity: 0.7;">
+          🔗 Connect this to WealthWise backend for automatic expense import
+        </p>
+      </div>
+    </body>
+    </html>
+  `);
+});
 
 // Health check endpoint
 app.get('/health', (req, res) => {

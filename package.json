@@ -1,5 +1,5 @@
 {
-  "name": "@keerthi_10/wealthWise",
+  "name": "@keerthi_10/wealthwise",
   "version": "1.0.1",
   "description": "A full-stack personal finance management application with expense tracking, budgeting, income tracking, and bank integration.",
   "main": "index.js",

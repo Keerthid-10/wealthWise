@@ -11,10 +11,24 @@ const BANK_API_URL = process.env.BANK_API_URL
  */
 const fetchBankTransactions = async () => {
   try {
-    const response = await axios.get(`${BANK_API_URL}/transactions/export`);
+    console.log(`Attempting to fetch from: ${BANK_API_URL}/transactions/export`);
+    const response = await axios.get(`${BANK_API_URL}/transactions/export`, {
+      headers: {
+        'Content-Type': 'application/json'
+      },
+      timeout: 10000 // 10 second timeout
+    });
+    console.log('Bank API response status:', response.status);
     return response.data;
   } catch (error) {
-    throw new Error(`Failed to fetch bank transactions: ${error.message}`);
+    console.error('Bank API Error Details:', {
+      message: error.message,
+      status: error.response?.status,
+      statusText: error.response?.statusText,
+      data: error.response?.data,
+      url: `${BANK_API_URL}/transactions/export`
+    });
+    throw new Error(`Failed to fetch bank transactions: ${error.response?.status || error.message}`);
   }
 };
 

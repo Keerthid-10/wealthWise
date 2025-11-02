@@ -1,0 +1,7 @@
+frontend\node_modules
+bank-statement-app\node_modules
+bank-statement-app\package-lock.json
+frontend\package-lock.json
+backend\logs
+backend\node_modules
+backend\package-lock.json
