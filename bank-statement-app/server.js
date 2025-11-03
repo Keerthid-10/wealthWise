@@ -7,13 +7,32 @@ require('dotenv').config();
 const app = express();
 const PORT = process.env.PORT || 3002;
 
-// Middleware - Allow all CORS requests
-app.use(cors({
-  origin: '*',
-  methods: ['GET', 'POST', 'PUT', 'DELETE', 'OPTIONS'],
-  allowedHeaders: ['Content-Type', 'Authorization']
-}));
+// CORS configuration - Fixed for proper preflight handling
+const corsOptions = {
+  origin: function (origin, callback) {
+    // Allow requests with no origin (like mobile apps, Postman, or same-origin)
+    if (!origin) return callback(null, true);
+
+    // Allow all origins (you can restrict this to specific origins if needed)
+    return callback(null, true);
+  },
+  methods: ['GET', 'POST', 'PUT', 'DELETE', 'OPTIONS', 'HEAD'],
+  allowedHeaders: ['Content-Type', 'Authorization', 'Accept', 'Origin', 'X-Requested-With'],
+  exposedHeaders: ['Content-Type', 'Authorization'],
+  credentials: true,
+  maxAge: 86400, // 24 hours
+  optionsSuccessStatus: 200
+};
+
+// Apply CORS middleware
+app.use(cors(corsOptions));
+
+// Handle preflight requests explicitly
+app.options('*', cors(corsOptions));
+
+// Body parser middleware
 app.use(express.json());
+app.use(express.urlencoded({ extended: true }));
 
 // Load bank statement data
 const bankStatementPath = path.join(__dirname, 'bank-statement.json');
