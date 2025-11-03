@@ -6,30 +6,87 @@ const BANK_API_URL = process.env.BANK_API_URL
   : 'http://localhost:3002/api/bank';
 
 /**
- * Fetch transactions from bank API
+ * Wait/delay function
+ * @param {number} ms - Milliseconds to wait
+ */
+const wait = (ms) => new Promise(resolve => setTimeout(resolve, ms));
+
+/**
+ * Fetch transactions from bank API with retry logic
+ * @param {number} retries - Number of retry attempts
  * @returns {Promise<Object>} Bank transactions
  */
-const fetchBankTransactions = async () => {
-  try {
-    console.log(`Attempting to fetch from: ${BANK_API_URL}/transactions/export`);
-    const response = await axios.get(`${BANK_API_URL}/transactions/export`, {
-      headers: {
-        'Content-Type': 'application/json'
-      },
-      timeout: 10000 // 10 second timeout
-    });
-    console.log('Bank API response status:', response.status);
-    return response.data;
-  } catch (error) {
-    console.error('Bank API Error Details:', {
-      message: error.message,
-      status: error.response?.status,
-      statusText: error.response?.statusText,
-      data: error.response?.data,
-      url: `${BANK_API_URL}/transactions/export`
-    });
-    throw new Error(`Failed to fetch bank transactions: ${error.response?.status || error.message}`);
+const fetchBankTransactions = async (retries = 3) => {
+  const urls = [
+    `${BANK_API_URL}/transactions/export`,
+    `http://127.0.0.1:3002/api/bank/transactions/export`,
+    `http://localhost:3002/api/bank/transactions/export`
+  ];
+
+  let lastError = null;
+
+  for (let attempt = 1; attempt <= retries; attempt++) {
+    for (const url of urls) {
+      try {
+        console.log(`[Attempt ${attempt}/${retries}] Fetching from: ${url}`);
+
+        const response = await axios.get(url, {
+          headers: {
+            'Content-Type': 'application/json',
+            'Accept': 'application/json'
+          },
+          timeout: 8000,
+          maxRedirects: 0,
+          proxy: false,
+          httpAgent: new (require('http')).Agent({
+            keepAlive: false,
+            family: 4 // Force IPv4
+          })
+        });
+
+        console.log('✅ Bank API connected successfully!');
+        console.log(`Status: ${response.status}, Data items: ${response.data.data?.length || 0}`);
+        return response.data;
+
+      } catch (error) {
+        lastError = error;
+        console.log(`❌ Failed with ${url}: ${error.message}`);
+
+        if (error.response?.status === 403) {
+          console.log('403 Forbidden - Check CORS settings in bank-statement-app/server.js');
+        } else if (error.code === 'ECONNREFUSED') {
+          console.log('Connection refused - Bank server may not be running on port 3002');
+        } else if (error.code === 'ETIMEDOUT') {
+          console.log('Timeout - Bank server is not responding');
+        }
+      }
+
+      // Small delay between URL attempts
+      await wait(500);
+    }
+
+    // Delay before retry
+    if (attempt < retries) {
+      console.log(`Waiting 2 seconds before retry ${attempt + 1}...`);
+      await wait(2000);
+    }
   }
+
+  // All attempts failed
+  console.error('❌ All connection attempts failed');
+  console.error('Last error:', {
+    message: lastError?.message,
+    status: lastError?.response?.status,
+    code: lastError?.code
+  });
+
+  throw new Error(
+    `Cannot connect to bank server. Please ensure:\n` +
+    `1. Bank server is running (cd bank-statement-app && npm start)\n` +
+    `2. Server is accessible at http://localhost:3002\n` +
+    `3. Check firewall settings\n` +
+    `Error: ${lastError?.message}`
+  );
 };
 
 /**

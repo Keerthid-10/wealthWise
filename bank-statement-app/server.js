@@ -274,10 +274,19 @@ app.get('/health', (req, res) => {
   res.json({ status: 'ok', message: 'Bank API Server is running' });
 });
 
-// Start server
-app.listen(PORT, () => {
-  console.log(`Bank API Server is running on http://localhost:${PORT}`);
-  console.log(`Serving bank statement data for: ${bankData.accountHolder.name}`);
-  console.log(`Account: ${bankData.accountDetails.statementNumber}`);
-  console.log(`Period: ${bankData.statementPeriod.from} to ${bankData.statementPeriod.to}`);
+// Start server on all interfaces for better compatibility
+app.listen(PORT, '0.0.0.0', () => {
+  console.log(`========================================`);
+  console.log(`✅ Bank API Server is RUNNING`);
+  console.log(`========================================`);
+  console.log(`Server URL: http://localhost:${PORT}`);
+  console.log(`Alt URL:    http://127.0.0.1:${PORT}`);
+  console.log(``);
+  console.log(`Account: ${bankData.accountHolder.name}`);
+  console.log(`Number:  ${bankData.accountHolder.accountNumber}`);
+  console.log(`Period:  ${bankData.statementPeriod.from} to ${bankData.statementPeriod.to}`);
+  console.log(`Balance: ₹${bankData.balance.closingBalance.toFixed(2)}`);
+  console.log(`========================================`);
+  console.log(`Test health: http://localhost:${PORT}/health`);
+  console.log(`========================================`);
 });
