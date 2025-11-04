@@ -84,9 +84,12 @@
   text-align: center;
 }
 
+.insight-card * {
+  color: white !important;
+}
+
 .insight-card h4 {
   font-size: 14px;
-  color: var(--text-light);
   margin-bottom: 10px;
   font-weight: 500;
 }
@@ -94,7 +97,6 @@
 .insight-card .amount {
   font-size: 24px;
   font-weight: bold;
-  color: var(--text-dark);
 }
 
 .insight-card .amount.success {

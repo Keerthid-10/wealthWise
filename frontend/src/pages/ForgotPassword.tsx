@@ -85,7 +85,7 @@ const ForgotPassword: React.FC = () => {
               transition: all 0.3s ease;
             }
             .copy-btn:hover {
-              background: #5a6fd8;
+              
               transform: translateY(-2px);
             }
             .timer {

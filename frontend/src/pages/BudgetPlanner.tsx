@@ -65,6 +65,17 @@ const BudgetPlanner: React.FC = () => {
           amount: parseFloat(cb.amount)
         }));
 
+      // Validate that sum of category budgets doesn't exceed total budget
+      if (categoryBudgets.length > 0) {
+        const totalCategoryBudgets = categoryBudgets.reduce((sum, cb) => sum + cb.amount, 0);
+        const totalBudget = parseFloat(formData.totalAmount);
+
+        if (totalCategoryBudgets > totalBudget) {
+          setError(`Total of category budgets (₹${totalCategoryBudgets.toFixed(2)}) exceeds the total budget (₹${totalBudget.toFixed(2)}). Please adjust your category budgets.`);
+          return;
+        }
+      }
+
       if (editingBudget) {
         // Update existing budget
         await budgetAPI.update(editingBudget._id, {
@@ -149,18 +160,10 @@ const BudgetPlanner: React.FC = () => {
   };
 
   const handleDelete = async (id: string) => {
-    if (window.confirm('Are you sure you want to delete this budget? All budget-related savings withdrawals will be automatically restored.')) {
+    if (window.confirm('Are you sure you want to delete this budget?')) {
       try {
         const response = await budgetAPI.delete(id);
-        let msg = response.data.message || 'Budget deleted successfully! All budget-related withdrawals have been automatically restored to your savings.';
-
-        // Show updated savings info if available
-        if (response.data.updatedSavings) {
-          msg += ` Your current savings balance is ₹${response.data.updatedSavings.currentAmount.toFixed(2)}.`;
-        }
-        msg += ' Refresh the Savings page to see your updated balance.';
-
-        setMessage(msg);
+        setMessage(response.data.message || 'Budget deleted successfully!');
         fetchBudgets();
         checkBudgetStatus();
       } catch (err: any) {
@@ -193,8 +196,6 @@ const BudgetPlanner: React.FC = () => {
           <div className="alert alert-info">
             <small>
               <strong>Note:</strong> You can only have one active budget per month. You can edit your existing budget or create a new one for the next month.
-              <br /><br />
-              <strong>Automatic Restoration:</strong> When you delete a budget, ALL budget-related savings withdrawals are automatically restored back to your savings account.
             </small>
           </div>
         </div>

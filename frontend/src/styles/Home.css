@@ -24,11 +24,11 @@
 
 .weekly-summary-banner {
   background: linear-gradient(135deg, var(--primary-lightest) 0%, #fff 100%);
-  border: 2px solid var(--primary-light);
+  border: 2px solid var(--secondary-color);
   border-radius: 16px;
   padding: 25px;
   margin-bottom: 40px;
-  box-shadow: 0 4px 15px rgba(139, 92, 246, 0.1);
+  box-shadow: 0 4px 15px rgba(10, 26, 68, 0.1);
 }
 
 .weekly-summary-banner h3 {
@@ -74,8 +74,8 @@
 
 .feature-card:hover:not(.disabled) {
   transform: translateY(-5px);
-  box-shadow: 0 8px 25px rgba(139, 92, 246, 0.15);
-  border-color: var(--primary-color);
+  box-shadow: 0 8px 25px rgba(62, 193, 211, 0.15);
+  border-color: var(--secondary-color);
 }
 
 .feature-card.disabled {

@@ -82,6 +82,9 @@ const Reports: React.FC = () => {
         <div className="card-header">
           <h2>Financial Reports & Insights</h2>
           <p>Analyze your spending patterns, trends, and financial health</p>
+          <button className="btn btn-primary" onClick={fetchReports}>
+            Refresh Reports
+          </button>
         </div>
 
         {/* Monthly Overview Cards */}
@@ -298,11 +301,11 @@ const Reports: React.FC = () => {
         </div>
 
         {/* Action Button */}
-        <div className="text-center mt-4">
+        {/* <div className="text-center mt-4">
           <button className="btn btn-primary" onClick={fetchReports}>
             Refresh Reports
           </button>
-        </div>
+        </div> */}
       </div>
     </div>
   );

@@ -1,36 +1,41 @@
-/* WealthWise Light Purple Theme */
+/* WealthWise Navy & Cyan Theme */
 
 :root {
-  /* Primary Purple Palette */
-  --primary-purple: #9b7bbf;
-  --primary-light: #c4a8d8;
-  --primary-lighter: #e6dff2;
-  --primary-dark: #7856a1;
-  --primary-darker: #5a3d7a;
+  /* Primary Deep Navy Palette */
+  --primary-purple: #0A1A44;
+  --primary-light: #1a2f5e;
+  --primary-lighter: #2a4478;
+  --primary-dark: #061229;
+  --primary-darker: #030a14;
 
-  /* Accent Colors */
-  --accent-lavender: #b8a4cd;
-  --accent-lilac: #dbd0e6;
-  --accent-mauve: #ab92c9;
+  /* Secondary Cyan Palette */
+  --accent-lavender: #3EC1D3;
+  --accent-lilac: #6dd4e3;
+  --accent-mauve: #2ba8b8;
+
+  /* Accent Lime */
+  --accent-lime: #8FF7A7;
+  --accent-lime-light: #a8f9bb;
+  --accent-lime-dark: #76e08e;
 
   /* Neutral Colors */
   --white: #ffffff;
-  --off-white: #fafafa;
-  --light-gray: #f5f5f7;
-  --gray: #e0e0e0;
+  --off-white: #F8F8F8;
+  --light-gray: #E8E8E8;
+  --gray: #A8A8A8;
   --dark-gray: #666666;
-  --text-dark: #333333;
+  --text-dark: #222831;
 
   /* Status Colors */
-  --success: #28a745;
+  --success: #8FF7A7;
   --danger: #dc3545;
   --warning: #ffc107;
-  --info: #17a2b8;
+  --info: #3EC1D3;
 
   /* Shadows */
-  --shadow-sm: 0 2px 4px rgba(155, 123, 191, 0.1);
-  --shadow-md: 0 4px 8px rgba(155, 123, 191, 0.15);
-  --shadow-lg: 0 8px 16px rgba(155, 123, 191, 0.2);
+  --shadow-sm: 0 2px 4px rgba(10, 26, 68, 0.1);
+  --shadow-md: 0 4px 8px rgba(10, 26, 68, 0.15);
+  --shadow-lg: 0 8px 16px rgba(10, 26, 68, 0.2);
 
   /* Border Radius */
   --radius-sm: 4px;
@@ -47,7 +52,7 @@
 
 body {
   font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
-  background: linear-gradient(135deg, var(--primary-lighter) 0%, var(--white) 50%, var(--accent-lilac) 100%);
+  background: var(--off-white);
   min-height: 100vh;
   color: var(--text-dark);
 }
@@ -122,12 +127,16 @@ body {
 }
 
 .card-header {
-  background: linear-gradient(135deg, var(--primary-lighter) 0%, var(--accent-lilac) 100%);
+  background: linear-gradient(135deg, var(--primary-purple) 0%, var(--primary-light) 100%);
   padding: 16px 24px;
   border-radius: var(--radius-lg) var(--radius-lg) 0 0;
   margin: -24px -24px 20px -24px;
   font-weight: 600;
-  color: var(--primary-darker);
+  color: white !important;
+}
+
+.card-header * {
+  color: white !important;
 }
 
 /* Form Controls */
@@ -197,14 +206,19 @@ body {
 }
 
 .table thead {
-  background: var(--primary-lighter);
+  background: var(--primary-purple);
+  color: white !important;
+}
+
+.table thead * {
+  color: white !important;
 }
 
 .table th {
   padding: 12px;
   text-align: left;
   font-weight: 600;
-  color: var(--primary-darker);
+  color: white !important;
 }
 
 .table td {
@@ -226,8 +240,8 @@ body {
 }
 
 .nav-link:hover {
-  background: var(--primary-lighter);
-  color: var(--primary-dark);
+  background: var(--accent-lilac);
+  color: var(--white);
 }
 
 .nav-link.active {
@@ -275,6 +289,7 @@ body {
 
 .bg-purple-light {
   background: var(--primary-lighter);
+  color: white;
 }
 
 .mb-4 {

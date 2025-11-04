@@ -2,6 +2,7 @@ import React from 'react';
 import { BrowserRouter as Router, Routes, Route, Navigate } from 'react-router-dom';
 import { AuthProvider, useAuth } from './utils/AuthContext';
 import Navbar from './components/Navbar';
+import Landing from './pages/Landing';
 import Home from './pages/Home';
 import Login from './pages/Login';
 import Signup from './pages/Signup';
@@ -18,6 +19,9 @@ import RecurringExpenses from './pages/RecurringExpenses';
 import Savings from './pages/Savings';
 import Reports from './pages/Reports';
 import Profile from './pages/Profile';
+import CommunitySavings from './pages/CommunitySavings';
+import CommunitySavingsDetail from './pages/CommunitySavingsDetail';
+import CommunitySavingsCreate from './pages/CommunitySavingsCreate';
 import './styles/Theme.css';
 import './App.css';
 import 'bootstrap/dist/css/bootstrap.min.css';
@@ -29,17 +33,23 @@ const ProtectedRoute: React.FC<{ children: React.ReactElement }> = ({ children }
   return isAuthenticated ? children : <Navigate to="/login" />;
 };
 
+// Public Route (redirect to home if authenticated)
+const PublicRoute: React.FC<{ children: React.ReactElement }> = ({ children }) => {
+  const { isAuthenticated } = useAuth();
+  return !isAuthenticated ? children : <Navigate to="/home" />;
+};
+
 const AppRoutes: React.FC = () => {
   return (
     <Router>
       <div className="App">
         <Navbar />
         <Routes>
-          <Route path="/" element={<Home />} />
-          <Route path="/login" element={<Login />} />
-          <Route path="/signup" element={<Signup />} />
+          {/* Public Routes */}
+          <Route path="/" element={<PublicRoute><Landing /></PublicRoute>} />
+          <Route path="/login" element={<PublicRoute><Login /></PublicRoute>} />
+          <Route path="/signup" element={<PublicRoute><Signup /></PublicRoute>} />
           <Route path="/reset-password" element={<ForgotPassword />} />
-          {/* <Route path="/reset-password" element={<ResetPassword />} /> */}
           <Route path="/otp-display" element={<OTPDisplay />} />
 
           {/* Protected Routes */}
@@ -55,6 +65,12 @@ const AppRoutes: React.FC = () => {
           <Route path="/reports" element={<ProtectedRoute><Reports /></ProtectedRoute>} />
           <Route path="/profile" element={<ProtectedRoute><Profile /></ProtectedRoute>} />
 
+          {/* Community Savings Routes */}
+          <Route path="/community-savings" element={<ProtectedRoute><CommunitySavings /></ProtectedRoute>} />
+          <Route path="/community-savings/create" element={<ProtectedRoute><CommunitySavingsCreate /></ProtectedRoute>} />
+          <Route path="/community-savings/:id" element={<ProtectedRoute><CommunitySavingsDetail /></ProtectedRoute>} />
+
+          {/* Fallback */}
           <Route path="*" element={<Navigate to="/" />} />
         </Routes>
       </div>

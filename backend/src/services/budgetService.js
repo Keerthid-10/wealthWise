@@ -1,10 +1,8 @@
 const Budget = require('../models/Budget');
 const Expense = require('../models/Expense');
-const FinancialGoal = require('../models/FinancialGoal');
-const savingsService = require('./savingsService');
 const { validateBudget } = require('../utils/validation');
 const { convertCurrency } = require('../utils/currencyConverter');
-const { getStartOfMonth, getEndOfMonth, getStartOfWeek, getEndOfWeek } = require('../utils/dateUtils');
+const { getStartOfMonth, getEndOfMonth } = require('../utils/dateUtils');
 
 /**
  * Create new monthly budget
@@ -15,7 +13,7 @@ const { getStartOfMonth, getEndOfMonth, getStartOfWeek, getEndOfWeek } = require
 const createBudget = async (userId, budgetData) => {
   // Force budget type to be monthly only
   budgetData.type = 'monthly';
-  
+
   const validation = validateBudget(budgetData);
   if (!validation.isValid) {
     return { success: false, errors: validation.errors };
@@ -126,11 +124,9 @@ const checkBudgetStatus = async (userId, currentDate, currency = 'INR') => {
       exceeded: totalSpent > monthlyBudget.totalAmount
     };
 
-    // Check category budgets - track individual status
+    // Check category budgets
     if (monthlyBudget.categoryBudgets && monthlyBudget.categoryBudgets.length > 0) {
       status.monthly.categoryStatus = {};
-      console.log('Checking category budgets:', monthlyBudget.categoryBudgets);
-      console.log('Category spending:', categorySpent);
 
       for (const catBudget of monthlyBudget.categoryBudgets) {
         const spent = categorySpent[catBudget.category] || 0;
@@ -144,10 +140,9 @@ const checkBudgetStatus = async (userId, currentDate, currency = 'INR') => {
           exceeded
         };
 
-        // Just alert about individual category exceeding, but don't deduct from savings
+        // Alert for category budget exceeded
         if (exceeded) {
           const exceededAmount = spent - catBudget.amount;
-          console.log(`Category ${catBudget.category} exceeded: spent ${spent}, budget ${catBudget.amount}, excess ${exceededAmount}`);
 
           status.alerts.push({
             type: 'category_exceeded',
@@ -161,71 +156,17 @@ const checkBudgetStatus = async (userId, currentDate, currency = 'INR') => {
       }
     }
 
-    // Check if TOTAL EXPENSES exceed TOTAL BUDGET - this is when we deduct from savings
+    // Check if total expenses exceed total budget
     if (status.monthly.exceeded) {
       const exceededAmount = totalSpent - monthlyBudget.totalAmount;
-      console.log(`Total expenses (${totalSpent}) exceeds total budget (${monthlyBudget.totalAmount}) by ${exceededAmount}`);
 
-      // Get nearest financial goal (closest deadline among active goals)
-      const activeGoals = await FinancialGoal.find({
-        userId,
-        status: 'active'
-      }).sort({ deadline: 1 }); // Sort by deadline ascending
-
-      let nearestGoal = null;
-      if (activeGoals.length > 0) {
-        nearestGoal = activeGoals[0]; // First one is the nearest
-      }
-
-      // Try to deduct exceeded amount from savings
-      try {
-        const savingsResult = await savingsService.withdrawFromSavings(
-          userId,
-          exceededAmount,
-          `Total expenses exceeded budget by ${currency} ${exceededAmount.toFixed(2)}`
-        );
-
-        if (savingsResult.success) {
-          const alertMessage = nearestGoal
-            ? `Budget exceeded! Total expenses (${currency} ${totalSpent.toFixed(2)}) exceed your monthly budget by ${currency} ${exceededAmount.toFixed(2)}. Amount deducted from savings. This might affect your financial goal: "${nearestGoal.title}" (deadline: ${new Date(nearestGoal.deadline).toLocaleDateString()}).`
-            : `Budget exceeded! Total expenses (${currency} ${totalSpent.toFixed(2)}) exceed your monthly budget by ${currency} ${exceededAmount.toFixed(2)}. Amount deducted from savings.`;
-
-          status.alerts.push({
-            type: 'budget_exceeded_savings_reduced',
-            message: alertMessage,
-            amount: exceededAmount,
-            totalSpent,
-            totalBudget: monthlyBudget.totalAmount,
-            remainingSavings: savingsResult.savings.currentAmount,
-            affectedGoal: nearestGoal ? {
-              title: nearestGoal.title,
-              deadline: nearestGoal.deadline,
-              targetAmount: nearestGoal.targetAmount,
-              currentAmount: nearestGoal.currentAmount
-            } : null
-          });
-        } else {
-          const alertMessage = nearestGoal
-            ? `Budget exceeded! Total expenses (${currency} ${totalSpent.toFixed(2)}) exceed your monthly budget by ${currency} ${exceededAmount.toFixed(2)}. Insufficient savings to cover excess. This might affect your financial goal: "${nearestGoal.title}".`
-            : `Budget exceeded! Total expenses (${currency} ${totalSpent.toFixed(2)}) exceed your monthly budget by ${currency} ${exceededAmount.toFixed(2)}. Insufficient savings to cover excess.`;
-
-          status.alerts.push({
-            type: 'budget_exceeded_insufficient_savings',
-            message: alertMessage,
-            amount: exceededAmount,
-            totalSpent,
-            totalBudget: monthlyBudget.totalAmount,
-            affectedGoal: nearestGoal ? {
-              title: nearestGoal.title,
-              deadline: nearestGoal.deadline,
-              targetAmount: nearestGoal.targetAmount,
-              currentAmount: nearestGoal.currentAmount
-            } : null
-          });
-        }
-      } catch (error) {
-        console.error('Error deducting from savings:', error);
-      }
+      status.alerts.push({
+        type: 'budget_exceeded',
+        message: `Total budget exceeded! You've spent ${currency} ${totalSpent.toFixed(2)}, which is ${currency} ${exceededAmount.toFixed(2)} over your budget of ${currency} ${monthlyBudget.totalAmount.toFixed(2)}.`,
+        amount: exceededAmount,
+        totalSpent,
+        totalBudget: monthlyBudget.totalAmount
+      });
     }
 
     // Check for monthly achievement (staying within budget)
@@ -248,7 +189,7 @@ const checkBudgetStatus = async (userId, currentDate, currency = 'INR') => {
 
         status.alerts.push({
           type: 'monthly_appreciation',
-          message: `🎉 Excellent budget management! You've used only ${spentPercentage.toFixed(1)}% of your monthly budget.`,
+          message: `Excellent budget management! You've used only ${spentPercentage.toFixed(1)}% of your monthly budget.`,
           achievement: 'staying_within_budget',
           remainingBudget: monthlyBudget.totalAmount - totalSpent
         });
@@ -256,7 +197,7 @@ const checkBudgetStatus = async (userId, currentDate, currency = 'INR') => {
         // Early appreciation for very low spending
         status.alerts.push({
           type: 'early_appreciation',
-          message: `👏 Amazing! You're keeping expenses very low with only ${spentPercentage.toFixed(1)}% of budget used.`,
+          message: `Amazing! You're keeping expenses very low with only ${spentPercentage.toFixed(1)}% of budget used.`,
           achievement: 'low_spending',
           spentPercentage: spentPercentage.toFixed(1)
         });
@@ -267,7 +208,7 @@ const checkBudgetStatus = async (userId, currentDate, currency = 'INR') => {
     if (currentDay >= daysInMonth - 2 && !status.monthly.exceeded) {
       status.alerts.push({
         type: 'month_end_celebration',
-        message: `🏆 Month almost over and you stayed within budget! You've successfully managed your finances this month.`,
+        message: `Month almost over and you stayed within budget! You've successfully managed your finances this month.`,
         achievement: 'budget_success',
         savedAmount: monthlyBudget.totalAmount - totalSpent
       });
@@ -322,59 +263,12 @@ const deleteBudget = async (userId, budgetId) => {
     return { success: false, errors: ['Budget not found'] };
   }
 
-  // Before deleting, automatically restore ALL budget-related withdrawals
-  try {
-    const savingsService = require('./savingsService');
-
-    console.log('Budget to delete:', {
-      id: budget._id,
-      startDate: budget.startDate,
-      endDate: budget.endDate
-    });
-
-    // Use the comprehensive restoration function to restore ALL budget-related withdrawals
-    const restorationResult = await savingsService.restoreAllBudgetWithdrawals(userId);
-
-    if (restorationResult.success && restorationResult.restoredAmount > 0) {
-      console.log(`Automatically restored ${restorationResult.restoredCount} withdrawal(s) totaling ${restorationResult.restoredAmount}`);
-    } else {
-      console.log('No budget-related withdrawals found to restore');
-    }
-  } catch (error) {
-    console.error('Error restoring savings on budget deletion:', error);
-    // Continue with budget deletion even if savings restore fails
-  }
-
   // Delete the budget
   await Budget.findOneAndDelete({ _id: budgetId, userId });
 
-  // Get updated savings to return
-  let updatedSavings = null;
-  let restoredAmount = 0;
-  try {
-    const Savings = require('../models/Savings');
-    const savingsAccount = await Savings.findOne({ userId });
-    if (savingsAccount) {
-      updatedSavings = {
-        currentAmount: savingsAccount.currentAmount,
-        transactionCount: savingsAccount.transactions.length
-      };
-
-      // Get the restoration result from earlier
-      const savingsService = require('./savingsService');
-      const lastRestoration = await savingsService.getSavingsAccount(userId);
-      if (lastRestoration.success) {
-        restoredAmount = lastRestoration.savings.currentAmount - (savingsAccount.currentAmount || 0);
-      }
-    }
-  } catch (error) {
-    console.error('Error fetching updated savings:', error);
-  }
-
   return {
     success: true,
-    message: 'Budget deleted successfully. All budget-related withdrawals have been automatically restored to your savings.',
-    updatedSavings
+    message: 'Budget deleted successfully.'
   };
 };
 

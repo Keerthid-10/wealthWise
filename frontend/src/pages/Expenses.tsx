@@ -55,7 +55,7 @@ const Expenses: React.FC = () => {
 
   const fetchBankBalance = async () => {
     try {
-      const BANK_API_URL = process.env.REACT_APP_BANK_API_URL || 'http://localhost:3002';
+      const BANK_API_URL = process.env.REACT_APP_BANK_API_URL || 'http://localhost:3001';
       const response = await axios.get(`${BANK_API_URL}/api/bank/transactions`);
       if (response.data.success) {
         setBankBalance(response.data.data.balance);
@@ -89,7 +89,7 @@ const Expenses: React.FC = () => {
       fetchExpenses();
       fetchBankBalance();
     } catch (err: any) {
-      setError(err.response?.data?.message || 'Failed to import from bank. Make sure the bank server is running on port 3002.');
+      setError(err.response?.data?.message || 'Failed to import from bank. Make sure the bank server is running on port 3001.');
     } finally {
       setLoading(false);
     }

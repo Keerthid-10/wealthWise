@@ -243,7 +243,7 @@ const getDashboardData = async (userId, currentDate, currency = 'INR') => {
   const startOfMonth = getStartOfMonth(currentDate);
   const endOfMonth = getEndOfMonth(currentDate);
 
-  const [expenses, income, patterns, insights] = await Promise.all([
+  const [expenses, income, patterns, insightsResponse] = await Promise.all([
     Expense.find({ userId, date: { $gte: startOfMonth, $lte: endOfMonth } }),
     Income.find({ userId, date: { $gte: startOfMonth, $lte: endOfMonth } }),
     getSpendingPatterns(userId, startOfMonth, endOfMonth, currency),
@@ -256,7 +256,7 @@ const getDashboardData = async (userId, currentDate, currency = 'INR') => {
       expenses: expenses.length,
       income: income.length,
       patterns: patterns.patterns,
-      insights: insights.insights
+      insights: insightsResponse.insights  // Extract insights from the response
     }
   };
 };

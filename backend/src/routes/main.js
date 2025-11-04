@@ -12,6 +12,7 @@ const {
   analyticsController
 } = require('../controllers/mainController');
 const bankController = require('../controllers/bankController');
+const communitySavingsController = require('../controllers/communitySavingsController');
 
 // Helper function to handle responses
 const handleResponse = async (res, controllerFn) => {
@@ -270,5 +271,17 @@ router.post('/bank/import', auth, async (req, res) => {
 router.post('/bank/categorize-suggestion', auth, async (req, res) => {
   await bankController.getCategorySuggestion(req, res);
 });
+
+// ===== COMMUNITY SAVINGS POT ROUTES =====
+router.post('/community-savings', auth, communitySavingsController.createGroup);
+router.get('/community-savings', auth, communitySavingsController.getUserGroups);
+router.get('/community-savings/:id', auth, communitySavingsController.getGroupById);
+router.post('/community-savings/:id/members', auth, communitySavingsController.addMember);
+router.post('/community-savings/:id/contribute', auth, communitySavingsController.recordContribution);
+router.post('/community-savings/:id/payout', auth, communitySavingsController.processPayout);
+router.get('/community-savings/:id/ledger', auth, communitySavingsController.getGroupLedger);
+router.get('/community-savings/pending/contributions', auth, communitySavingsController.getPendingContributions);
+router.put('/community-savings/:id', auth, communitySavingsController.updateGroup);
+router.delete('/community-savings/:id', auth, communitySavingsController.deleteGroup);
 
 module.exports = router;

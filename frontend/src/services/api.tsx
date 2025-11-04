@@ -137,4 +137,19 @@ export const remindersAPI = {
   getReminders: (date?: string) => api.get('/reminders', { params: { date } })
 };
 
+// Community Savings API
+export const communitySavingsAPI = {
+  create: (data: any) => api.post('/community-savings', data),
+  getAll: () => api.get('/community-savings'),
+  getById: (id: string) => api.get(`/community-savings/${id}`),
+  addMember: (id: string, userEmail: string) => api.post(`/community-savings/${id}/members`, { userEmail }),
+  contribute: (id: string, amount: number, contributionDate?: string) =>
+    api.post(`/community-savings/${id}/contribute`, { amount, contributionDate }),
+  processPayout: (id: string) => api.post(`/community-savings/${id}/payout`),
+  getLedger: (id: string) => api.get(`/community-savings/${id}/ledger`),
+  getPending: () => api.get('/community-savings/pending/contributions'),
+  update: (id: string, data: any) => api.put(`/community-savings/${id}`, data),
+  delete: (id: string) => api.delete(`/community-savings/${id}`)
+};
+
 export default api;

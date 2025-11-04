@@ -1,0 +1,114 @@
+{
+  "transactions": [
+    {
+      "id": "TXN001",
+      "transactionId": "TXN001",
+      "date": "2025-11-01T10:30:00Z",
+      "description": "Swiggy Food Order",
+      "merchant": "Swiggy",
+      "amount": 450.50,
+      "currency": "INR",
+      "type": "debit",
+      "category": "Food & Dining"
+    },
+    {
+      "id": "TXN002",
+      "transactionId": "TXN002",
+      "date": "2025-11-01T14:20:00Z",
+      "description": "Amazon Shopping",
+      "merchant": "Amazon",
+      "amount": 1250.00,
+      "currency": "INR",
+      "type": "debit",
+      "category": "Shopping"
+    },
+    {
+      "id": "TXN003",
+      "transactionId": "TXN003",
+      "date": "2025-11-02T09:00:00Z",
+      "description": "Salary Credit",
+      "merchant": "Company Ltd",
+      "amount": 50000.00,
+      "currency": "INR",
+      "type": "credit",
+      "category": "Income"
+    },
+    {
+      "id": "TXN004",
+      "transactionId": "TXN004",
+      "date": "2025-11-02T11:45:00Z",
+      "description": "Uber Ride",
+      "merchant": "Uber",
+      "amount": 185.00,
+      "currency": "INR",
+      "type": "debit",
+      "category": "Transportation"
+    },
+    {
+      "id": "TXN005",
+      "transactionId": "TXN005",
+      "date": "2025-11-03T16:30:00Z",
+      "description": "Netflix Subscription",
+      "merchant": "Netflix",
+      "amount": 649.00,
+      "currency": "INR",
+      "type": "debit",
+      "category": "Entertainment"
+    },
+    {
+      "id": "TXN006",
+      "transactionId": "TXN006",
+      "date": "2025-01-25T12:00:00Z",
+      "description": "Grocery Shopping",
+      "merchant": "Big Basket",
+      "amount": 2340.75,
+      "currency": "INR",
+      "type": "debit",
+      "category": "Groceries"
+    },
+    {
+      "id": "TXN007",
+      "transactionId": "TXN007",
+      "date": "2025-01-28T18:15:00Z",
+      "description": "Electricity Bill",
+      "merchant": "BESCOM",
+      "amount": 1450.00,
+      "currency": "INR",
+      "type": "debit",
+      "category": "Utilities"
+    },
+    {
+      "id": "TXN008",
+      "transactionId": "TXN008",
+      "date": "2025-02-01T10:00:00Z",
+      "description": "Zomato Food Order",
+      "merchant": "Zomato",
+      "amount": 520.00,
+      "currency": "INR",
+      "type": "debit",
+      "category": "Food & Dining"
+    },
+    {
+      "id": "TXN009",
+      "transactionId": "TXN009",
+      "date": "2025-02-03T15:30:00Z",
+      "description": "Flipkart Shopping",
+      "merchant": "Flipkart",
+      "amount": 3200.00,
+      "currency": "INR",
+      "type": "debit",
+      "category": "Shopping"
+    },
+    {
+      "id": "TXN010",
+      "transactionId": "TXN010",
+      "date": "2025-02-05T13:45:00Z",
+      "description": "Freelance Payment",
+      "merchant": "Client XYZ",
+      "amount": 15000.00,
+      "currency": "INR",
+      "type": "credit",
+      "category": "Income"
+    }
+  ]
+}
